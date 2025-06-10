@@ -76,7 +76,7 @@ static NSBundle *tweakBundle = nil; // not sure why I need to store tweakBundle
 
 // Get the image for the loop button based on the given state and size
 static UIImage *getYouLoopImage(NSString *imageSize) {
-    UIColor *tintColor = IS_ENABLED(@"defaultLoop_enabled") ? (UIColor *)[%c(YTColor) youTubeRed] : (UIColor *)[%c(YTColor) white1];
+    UIColor *tintColor = IS_ENABLED(@"defaultLoop_enabled") ? [%c(YTColor) lightRed] : [%c(YTColor) white1];
     NSString *imageName = [NSString stringWithFormat:@"PlayerLoop@%@", imageSize];
     return [%c(QTMIcon) tintImage:[UIImage imageNamed:imageName inBundle:YouLoopBundle() compatibleWithTraitCollection:nil] color:tintColor];
 }
