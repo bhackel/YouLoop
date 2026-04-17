@@ -1,0 +1,4 @@
+"ENABLED" = "顯示循環按鈕";
+"POSITION" = "循環按鈕位置";
+"LOOP_DISABLED" = "已停用循環";
+"LOOP_ENABLED" = "已啟用循環";

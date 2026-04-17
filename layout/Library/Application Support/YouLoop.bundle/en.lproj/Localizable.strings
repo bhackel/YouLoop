@@ -1,4 +1,4 @@
-// Settings
-
-"ENABLED" = "Show Loop button";
+"ENABLED" = "Show loop button";
 "POSITION" = "Loop button position";
+"LOOP_DISABLED" = "Loop disabled";
+"LOOP_ENABLED" = "Loop enabled";

@@ -1,4 +1,4 @@
-// Settings
-
 "ENABLED" = "Tampilkan tombol ulang";
 "POSITION" = "Posisi tombol ulang";
+"LOOP_DISABLED" = "Pengulangan dinonaktifkan";
+"LOOP_ENABLED" = "Pengulangan diaktifkan";

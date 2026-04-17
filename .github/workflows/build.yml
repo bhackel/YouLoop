@@ -1,0 +1,81 @@
+name: Build YouLoop
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to build from'
+        required: false
+        default: 'main'
+   
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build YouLoop
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Install dependencies
+        run: brew install make ldid
+
+      - name: Set PATH environment variables
+        run: |
+          echo "$(brew --prefix make)/libexec/gnubin" >> $GITHUB_PATH
+          echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
+
+      - name: Clone Theos
+        run: git clone --quiet --depth=1 --recurse-submodules https://github.com/roothide/theos.git
+           
+      - name: Download iOS SDK
+        run: |
+          git clone --quiet --depth=1 -n --filter=tree:0 https://github.com/theos/sdks.git
+          cd sdks
+          git sparse-checkout set --no-cone iPhoneOS16.5.sdk
+          git checkout
+          mv *.sdk $THEOS/sdks
+
+      - name: Clone YouTubeHeader
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YouTubeHeader.git $THEOS/include/YouTubeHeader
+
+      - name: Clone PSHeader
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/PSHeader.git $THEOS/include/PSHeader
+
+      - name: Clone YTVideoOverlay
+        run: git clone --quiet --depth=1 https://github.com/PoomSmart/YTVideoOverlay.git
+
+      - name: Clone YouLoop
+        run: git clone --quiet --depth=1 --branch ${{ inputs.branch || 'main' }} ${{ github.server_url }}/${{ github.repository }}.git YouLoop
+
+      - name: Build YouLoop
+        run: |
+          cd YouLoop
+          echo "YOULOOP_VERSION=$(grep '^Version:' control | cut -d ' ' -f2)" >> $GITHUB_ENV
+          make clean package DEBUG=0 FINALPACKAGE=1
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=rootless
+          make clean package DEBUG=0 FINALPACKAGE=1 THEOS_PACKAGE_SCHEME=roothide
+          mv packages/*.deb ${{ github.workspace }}
+
+      - name: Upload the tweak .deb(s)
+        uses: actions/upload-artifact@v7
+        with:
+         name: YouLoop v${{ env.YOULOOP_VERSION }}
+         path: ${{ github.workspace }}/*.deb
+         if-no-files-found: error
+         overwrite: true
+
+      - name: Create a draft release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: v${{ env.YOULOOP_VERSION }}
+          name: v${{ env.YOULOOP_VERSION }} 
+          files: |
+             com.bhackel.youloop_${{ env.YOULOOP_VERSION }}_iphoneos-arm.deb
+             com.bhackel.youloop_${{ env.YOULOOP_VERSION }}_iphoneos-arm64.deb
+             com.bhackel.youloop_${{ env.YOULOOP_VERSION }}_iphoneos-arm64e.deb
+          draft: true

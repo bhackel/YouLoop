@@ -1,0 +1,4 @@
+"ENABLED" = "Afficher le bouton Boucle";
+"POSITION" = "Position du bouton Boucle";
+"LOOP_DISABLED" = "Boucle désactivée";
+"LOOP_ENABLED" = "Boucle activée";

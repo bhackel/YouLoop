@@ -1,0 +1,4 @@
+"ENABLED" = "显示循环按钮";
+"POSITION" = "循环按钮位置";
+"LOOP_DISABLED" = "已禁用循环";
+"LOOP_ENABLED" = "已启用循环";
